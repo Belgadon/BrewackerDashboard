@@ -1,12 +1,11 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import random
-import time
 import datetime
 
 
@@ -54,7 +53,7 @@ app.index_string = """<!DOCTYPE html>
 </html>"""
 
 # -- CSS Stylesheet einbinden (optional, aber empfohlen für das Layout) --
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"}) # Standard CSS
+#app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"}) # Standard CSS
 
 
 # -- Layout der App --
