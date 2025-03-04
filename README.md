@@ -3,7 +3,8 @@
 ![img.png](assets/img.png)
 ## How to use
 ### Installation
-Run ```pip install -r requirements.txt```
+1. Run ```pip install -r requirements.txt```
+2. Install temperatur sensor, e.g. by replacing ```randint()``` function in dashboard.py
 
 ### Usage
 1. Run ```py dashboard.py```
