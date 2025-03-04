@@ -1,0 +1,43 @@
+body {
+    background-color: #222;
+    color: #eee;
+    font-family: sans-serif;
+}
+
+h1, h2, h3 {
+    color: #fff;
+}
+
+.dash-graph {
+    background-color: #333;
+    border: 1px solid #555;
+    padding: 10px;
+}
+
+.dash-graph .plotly { /* Für die Plotly-Diagramme */
+    background-color: #333 !important; /* Wichtig, um die Plotly-Hintergrundfarbe zu überschreiben */
+}
+
+button {
+    background-color: #444;
+    color: #eee;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        background-color: red;
+    }
+}
