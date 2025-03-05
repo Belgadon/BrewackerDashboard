@@ -56,7 +56,7 @@ layout = html.Div(
                                         value=25,  # Startwert
                                         min=0,
                                         max=100,
-                                        height=300, # Höhe des Thermometers
+                                        height=250, # Höhe des Thermometers
                                         showCurrentValue=True,
                                         units="°C",
                                         style={"color": "black"}
@@ -70,6 +70,14 @@ layout = html.Div(
                                         'margin': '0',
                                         'cursor': 'pointer', # Cursor-Stil ändern
                                     }
+                                ),
+                                dbc.Input( # Number Input Feld
+                                    id='temp-threshold-1',
+                                    type='number',
+                                    value=35, # Startwert
+                                    min=0,
+                                    max=100,
+                                    style={'marginTop': '10px', 'width': '100px'}
                                 ),
                                 dbc.Modal(
                                     [
@@ -89,7 +97,7 @@ layout = html.Div(
                                         value=30,  # Startwert
                                         min=0,
                                         max=100,
-                                        height=300, # Höhe des Thermometers
+                                        height=250, # Höhe des Thermometers
                                         showCurrentValue=True,
                                         units="°C",
                                         style={"color": "black"}
@@ -103,6 +111,14 @@ layout = html.Div(
                                         'margin': '0',
                                         'cursor': 'pointer', # Cursor-Stil ändern
                                     }
+                                ),
+                                dbc.Input( # Number Input Feld
+                                    id='temp-threshold-2',
+                                    type='number',
+                                    value=35, # Startwert
+                                    min=0,
+                                    max=100,
+                                    style={'marginTop': '10px', 'width': '100px'}
                                 ),
                                 dbc.Modal(
                                     [
@@ -200,25 +216,25 @@ layout = html.Div(
 )
 
 # -- Callbacks --
-@callback(
-    Output('temp-thermometer-1', 'color'),
-    [Input('temp-thermometer-1', 'value')]
-)
-def update_therm_col(val):
-    if val >= 50:
-        return 'linear-gradient(red, yellow)'
-    elif val < 50:
-        return 'linear-gradient(green, yellow)'
+#@callback(
+#    Output('temp-thermometer-1', 'color'),
+#    [Input('temp-thermometer-1', 'value')]
+#)
+#def update_therm_col(val):
+#    if val >= 50:
+#        return 'linear-gradient(red, yellow)'
+#    elif val < 50:
+#        return 'linear-gradient(green, yellow)'
 
-@callback(
-    Output('temp-thermometer-2', 'color'),
-    [Input('temp-thermometer-2', 'value')]
-)
-def update_therm_col(val):
-    if val >= 50:
-        return 'linear-gradient(green, yellow)'
-    elif val < 50:
-        return 'linear-gradient(red, yellow)'
+#@callback(
+#    Output('temp-thermometer-2', 'color'),
+#    [Input('temp-thermometer-2', 'value')]
+#)
+#def update_therm_col(val):
+#    if val >= 50:
+#        return 'linear-gradient(green, yellow)'
+#    elif val < 50:
+#        return 'linear-gradient(red, yellow)'
 
 # Temperatur-Thermometer-Update
 @callback(
@@ -289,6 +305,36 @@ def update_chart_2(is_open, current_temp):
         return create_line_chart(TEMP_HISTORY_2,  "Historische Temperatur Sensor 2")
     return go.Figure() # Leeres Diagramm, wenn das Modal geschlossen ist
 
+
+# Callback um die Farbe der Thermometer zu ändern
+@callback(
+    [Output('temp-thermometer-1', 'color'),
+     Output('temp-thermometer-2', 'color')],
+    [Input('temp-thermometer-1', 'value'),
+     Input('temp-thermometer-2', 'value'),
+     Input('temp-threshold-1', 'value'),
+     Input('temp-threshold-2', 'value')]
+)
+def update_thermometer_color(temp1, temp2, threshold1, threshold2):
+    """Ändert die Farbe der Thermometer, wenn die Temperatur den Schwellenwert erreicht."""
+    #color1 = 'blue' if temp1 < threshold1 else 'red'
+    #color2 = 'blue' if temp2 < threshold2 else 'red'
+
+    if temp1 < threshold1 - 2:
+        color1 = 'linear-gradient(yellow, blue)'
+    elif temp1 > threshold1 + 2:
+        color1 = 'linear-gradient(red, yellow)'
+    else:
+        color1 = 'linear-gradient(green, yellow)'
+
+    if temp2 < threshold2 - 2:
+        color2 = 'linear-gradient(yellow, blue)'
+    elif temp2 > threshold2 + 2:
+        color2 = 'linear-gradient(red, yellow)'
+    else:
+        color2 = 'linear-gradient(green, yellow)'
+
+    return color1, color2
 
 # Kombinierter Timer Callback
 @callback(
