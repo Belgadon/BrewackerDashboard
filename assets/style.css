@@ -1,11 +1,23 @@
+.nav-pills .nav-link.active {
+    color: #fff;
+    background-color: orange;
+    padding: 5px;
+    width: 2rem;
+}
+
+.nav-pills .nav-link {
+    padding: 5px;
+    width: 2rem;
+}
+
 body {
-    background-color: #222;
-    color: #eee;
+    #background-color: #222;
+    color: #535353;
     font-family: sans-serif;
 }
 
 h1, h2, h3 {
-    color: #fff;
+    color: #535353;
 }
 
 .dash-graph {
@@ -40,4 +52,27 @@ button:hover {
     50% {
         background-color: red;
     }
+}
+
+.ingredients {
+  margin: 0;
+  padding: 0.3rem;
+  background-color: #eee;
+}
+
+.ingredients > h1,
+.ingredient {
+  margin: 0.5rem;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+}
+
+.ingredient {
+  background: right/contain content-box border-box no-repeat white
+}
+
+.ingredient > h2,
+.ingredient > p {
+  margin: 0.2rem;
+  font-size: 1rem;
 }
