@@ -1,3 +1,6 @@
+import glob
+import time
+
 import dash
 from dash import dcc, html, callback
 from dash import dcc
@@ -16,10 +19,41 @@ TEMP_HISTORY_1 = []  # Historische Temperaturdaten für Thermometer 1
 TEMP_HISTORY_2 = []  # Historische Temperaturdaten für Thermometer 2
 MAX_HISTORY_LENGTH = 20 # Maximale Anzahl an historischen Datenpunkten
 
+TEMP_INTERVAL = 10  # Aktualisiert die Temperatur alle 0.01 Sekunden (10 ms)
+debug_mode = True
+
+if not debug_mode:
+    # Temp Sensor 1
+    base_dir1 = "/sys/bus/w1/devices/"
+    device_folder1 = glob.glob(base_dir1 + "28*")[0]
+    device_file1 = device_folder1 + "/w1_slave"
+
+    #Temp Sensor 2
+    base_dir2 = "/sys/bus/w1/devices/"
+    device_folder2 = glob.glob(base_dir2 + "28*")[0]
+    device_file2 = device_folder2 + "/w1_slave"
+
 # -- Hilfsfunktionen --
 def randint(min=0,max=100):
     a = random.randint(min,max)
     return a
+
+def read_temp_raw(file):
+  file = open(file, "r")
+  rows = file.readlines()
+  file.close()
+  return rows
+
+def read_temp(file):
+    lines = read_temp_raw(file)
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        return temp_c
 
 def create_line_chart(data, title):
     """Erstellt ein Liniendiagramm mit Plotly."""
@@ -147,7 +181,7 @@ layout = html.Div(
                 ),
                 dcc.Interval(  # Aktualisiert die Temperaturwerte regelmäßig
                     id='temp-interval',
-                    interval=1000,  # Aktualisiert alle 3 Sekunden (3000 ms)
+                    interval=TEMP_INTERVAL,
                     n_intervals=0
                 )
             ]
@@ -238,10 +272,12 @@ def update_temp_thermometers(n):
     """Aktualisiert die Thermometer mit simulierten Temperaturwerten und speichert die Historie."""
     global TEMP_HISTORY_1, TEMP_HISTORY_2
 
-    temp1 = randint()
-    temp2 = randint()
-    #temp1 = random.randint(10, 40)  # Simulierter Temperaturwert
-    #temp2 = random.randint(15, 45)
+    if debug_mode:
+        temp1 = randint()
+        temp2 = randint()
+    else:
+        temp1 = read_temp(device_file1)
+        temp2 = read_temp(device_file2)
 
     # Speichern der historischen Daten (mit Zeitstempel)
     TEMP_HISTORY_1.append({'timestamp': datetime.datetime.now(), 'temperature': temp1})

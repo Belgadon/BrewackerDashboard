@@ -5,6 +5,8 @@ from dash import Input, Output, dcc, html
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], use_pages=True)
 
+server = app.server
+
 # Viewport Meta Tag für Auflösung
 app.index_string = """<!DOCTYPE html>
 <html>
