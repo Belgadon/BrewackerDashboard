@@ -11,12 +11,6 @@ import datetime
 
 dash.register_page(__name__, path='/', icon="bi bi-thermometer-half") # , path='/'
 
-#layout = html.Div(
-#    [
-#        dcc.Markdown('# This will be the content of Page 1')
-#    ]
-#)
-
 # -- Globale Variablen --
 TEMP_HISTORY_1 = []  # Historische Temperaturdaten für Thermometer 1
 TEMP_HISTORY_2 = []  # Historische Temperaturdaten für Thermometer 2
@@ -71,13 +65,22 @@ layout = html.Div(
                                         'cursor': 'pointer', # Cursor-Stil ändern
                                     }
                                 ),
-                                dbc.Input( # Number Input Feld
-                                    id='temp-threshold-1',
-                                    type='number',
-                                    value=35, # Startwert
-                                    min=0,
-                                    max=100,
-                                    style={'marginTop': '10px', 'width': '100px'}
+                                html.Div(
+                                    style={'display': 'flex', 'alignItems': 'center', 'marginTop': '10px'},
+                                    children=[
+                                        dbc.Button("-", id='temp-threshold-1-dec', size="sm",
+                                                   style={'marginRight': '5px'}),
+                                        dbc.Input(  # Number Input Feld
+                                            id='temp-threshold-1',
+                                            type='number',
+                                            value=35,  # Startwert
+                                            min=0,
+                                            max=100,
+                                            style={'width': '100px'}
+                                        ),
+                                        dbc.Button("+", id='temp-threshold-1-inc', size="sm",
+                                                   style={'marginLeft': '5px'}),
+                                    ]
                                 ),
                                 dbc.Modal(
                                     [
@@ -112,14 +115,24 @@ layout = html.Div(
                                         'cursor': 'pointer', # Cursor-Stil ändern
                                     }
                                 ),
-                                dbc.Input( # Number Input Feld
-                                    id='temp-threshold-2',
-                                    type='number',
-                                    value=35, # Startwert
-                                    min=0,
-                                    max=100,
-                                    style={'marginTop': '10px', 'width': '100px'}
+                                html.Div(
+                                    style={'display': 'flex', 'alignItems': 'center', 'marginTop': '10px'},
+                                    children=[
+                                        dbc.Button("-", id='temp-threshold-2-dec', size="sm",
+                                                   style={'marginRight': '5px'}),
+                                        dbc.Input(  # Number Input Feld
+                                            id='temp-threshold-2',
+                                            type='number',
+                                            value=35,  # Startwert
+                                            min=0,
+                                            max=100,
+                                            style={'width': '100px'}
+                                        ),
+                                        dbc.Button("+", id='temp-threshold-2-inc', size="sm",
+                                                   style={'marginLeft': '5px'}),
+                                    ]
                                 ),
+
                                 dbc.Modal(
                                     [
                                         dbc.ModalBody(dcc.Graph(id='temp-history-chart-2')),
@@ -214,27 +227,6 @@ layout = html.Div(
         html.Button('Stop Blinking', id='stop-blinking', n_clicks=0, style={'display': 'none'})
     ]
 )
-
-# -- Callbacks --
-#@callback(
-#    Output('temp-thermometer-1', 'color'),
-#    [Input('temp-thermometer-1', 'value')]
-#)
-#def update_therm_col(val):
-#    if val >= 50:
-#        return 'linear-gradient(red, yellow)'
-#    elif val < 50:
-#        return 'linear-gradient(green, yellow)'
-
-#@callback(
-#    Output('temp-thermometer-2', 'color'),
-#    [Input('temp-thermometer-2', 'value')]
-#)
-#def update_therm_col(val):
-#    if val >= 50:
-#        return 'linear-gradient(green, yellow)'
-#    elif val < 50:
-#        return 'linear-gradient(red, yellow)'
 
 # Temperatur-Thermometer-Update
 @callback(
@@ -336,6 +328,41 @@ def update_thermometer_color(temp1, temp2, threshold1, threshold2):
 
     return color1, color2
 
+
+@callback(
+    Output('temp-threshold-1', 'value'),
+    [Input('temp-threshold-1-inc', 'n_clicks'),
+     Input('temp-threshold-1-dec', 'n_clicks')],
+    [State('temp-threshold-1', 'value')]
+)
+def update_temp_threshold_1(inc_clicks, dec_clicks, current_value):
+    if not current_value:
+        current_value = 0
+    ctx = dash.callback_context
+    if ctx.triggered and 'inc' in ctx.triggered[0]['prop_id']:
+        return min(100, current_value + 1)
+    elif ctx.triggered and 'dec' in ctx.triggered[0]['prop_id']:
+        return max(0, current_value - 1)
+    return current_value
+
+
+@callback(
+    Output('temp-threshold-2', 'value'),
+    [Input('temp-threshold-2-inc', 'n_clicks'),
+     Input('temp-threshold-2-dec', 'n_clicks')],
+    [State('temp-threshold-2', 'value')]
+)
+def update_temp_threshold_2(inc_clicks, dec_clicks, current_value):
+    if not current_value:
+        current_value = 0
+    ctx = dash.callback_context
+    if ctx.triggered and 'inc' in ctx.triggered[0]['prop_id']:
+        return min(100, current_value + 1)
+    elif ctx.triggered and 'dec' in ctx.triggered[0]['prop_id']:
+        return max(0, current_value - 1)
+    return current_value
+
+
 # Kombinierter Timer Callback
 @callback(
     [Output('timer-1-value', 'data'),
@@ -371,7 +398,7 @@ def update_timers(t1_add_1, t1_add_5, t1_sub_1, t1_sub_5, t1_start, t1_stop,
     """Aktualisiert alle Timer-Werte und -Status basierend auf Button-Klicks UND Interval."""
     ctx = dash.callback_context
     if not ctx.triggered:
-        return t1_current_value, t1_timer_running, t2_current_value, t2_timer_running
+        return t1_current_value, t1_timer_running, t2_current_value, t2_timer_running, blinking
 
     triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
